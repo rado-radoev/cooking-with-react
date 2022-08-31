@@ -1,10 +1,26 @@
-import React, {useState, useId} from "react";
+import React, {useState, useId, useEffect } from "react";
 import ReceipeList from "./ReceipeList";
 import '../css/app.css';
 
+export const RecipeContext = React.createContext();
+const LOCAL_STORAGE_KEY = 'cookingWithReact.recipes';
+
 function App() {
   const id = useId();
-  const [recipe, setRecipe] = useState(sampleRecepies);
+
+  const [recipes, setRecipes] = useState(() => {
+    const recipeJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
+    return recipeJSON ? JSON.parse(recipeJSON) : sampleRecepies
+  })
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(recipes));
+  }, [recipes]);
+
+  const recipeContextValue = {
+    handleRecipeAdd,
+    handleRecipeDelete
+  }
 
   function handleRecipeAdd() {
     const newRecipe = {
@@ -22,19 +38,22 @@ function App() {
       ]
     }
 
-    setRecipe([...recipe, newRecipe]);
+    setRecipes([...recipes, newRecipe]);
   }
 
   function handleRecipeDelete(id) {
-    setRecipe(prevRecipes => prevRecipes.filter(recipe => recipe.id !== id))
+    setRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.id !== id))
   }
 
   return (
-    <ReceipeList
-      recipes={recipe}
-      handleRecipeAdd={handleRecipeAdd}
-      handleRecipeDelete={handleRecipeDelete}
-    />
+    <RecipeContext.Provider value={recipeContextValue}>
+      <ReceipeList recipes={recipes} />
+    </RecipeContext.Provider>
+    // <ReceipeList
+    //   recipes={recipe}
+    //   handleRecipeAdd={handleRecipeAdd}
+    //   handleRecipeDelete={handleRecipeDelete}
+    // />
   )
 }
 
