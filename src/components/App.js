@@ -1,6 +1,7 @@
 import React, {useState, useId, useEffect } from "react";
 import ReceipeList from "./ReceipeList";
 import '../css/app.css';
+import RecipeEdit from "./RecipeEdit";
 
 export const RecipeContext = React.createContext();
 const LOCAL_STORAGE_KEY = 'cookingWithReact.recipes';
@@ -8,10 +9,12 @@ const LOCAL_STORAGE_KEY = 'cookingWithReact.recipes';
 function App() {
   const id = useId();
 
+  const [selectedRecipeId, setSelectedRecipeId] = useState();
   const [recipes, setRecipes] = useState(() => {
     const recipeJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
     return recipeJSON ? JSON.parse(recipeJSON) : sampleRecepies
   })
+  const selectedRecipe = recipes.find(recipe => recipe.id === selectedRecipeId);
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(recipes));
@@ -19,25 +22,39 @@ function App() {
 
   const recipeContextValue = {
     handleRecipeAdd,
-    handleRecipeDelete
+    handleRecipeDelete,
+    handleRecipeSelect,
+    handleRecipeChange
+  }
+
+  function handleRecipeSelect(id) {
+    setSelectedRecipeId(id);
+  }
+
+  function handleRecipeChange(id, recipe) {
+    const newRecipes = [...recipes];
+    const index = newRecipes.findIndex(r => r.id === id);
+    newRecipes[index] = recipe;
+    setRecipes(newRecipes)
   }
 
   function handleRecipeAdd() {
     const newRecipe = {
       id,
-      name: 'New',
+      name: '',
       servings: 1,
-      cookTime: '1:00',
-      instructions: '1. Instructions, 2. Instructions',
+      cookTime: '',
+      instructions: '',
       ingredients: [
         {
           id,
-          name: 'Name',
-          amount: '1 Tbs'
+          name: '',
+          amount: ''
         }
       ]
     }
 
+    setSelectedRecipeId(newRecipe.id);
     setRecipes([...recipes, newRecipe]);
   }
 
@@ -48,6 +65,7 @@ function App() {
   return (
     <RecipeContext.Provider value={recipeContextValue}>
       <ReceipeList recipes={recipes} />
+      {selectedRecipe && <RecipeEdit recipe={selectedRecipe} />}
     </RecipeContext.Provider>
     // <ReceipeList
     //   recipes={recipe}

@@ -4,9 +4,11 @@
 @import 'ingredient-list.css';
 @import 'recipe-list.css';
 @import 'recipe.css';
+@import 'recipe-edit.css';
 
 *, *::before, *::after {
   font-family: 'Roboto-Regular', sans-serif;
+  box-sizing: border-box;
 }
 
 html {

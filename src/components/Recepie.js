@@ -3,7 +3,7 @@ import IngredientList from './IngredientList'
 import { RecipeContext } from './App'
 
 export default function Recepie(props) {
-  const { handleRecipeDelete } = useContext(RecipeContext);
+  const { handleRecipeDelete, handleRecipeSelect } = useContext(RecipeContext);
 
   const {
     id,
@@ -19,7 +19,11 @@ export default function Recepie(props) {
       <div className="recipe__header">
         <h3 className="recipe__title">{name}</h3>
         <div>
-          <button className="btn btn--primary mr-1 mr-3">Edit</button>
+          <button
+            className="btn btn--primary mr-1 mr-3"
+            onClick={() => handleRecipeSelect(id)}>
+            Edit
+          </button>
           <button
             className="btn btn--danger"
             onClick={() => handleRecipeDelete(id)}
